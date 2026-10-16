@@ -1,0 +1,756 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>BinoXR｜空间图片浏览与 AI 立体转换</title>
+  <style>
+    :root {
+      --black: #ffffff;
+      --surface: #f5f5f7;
+      --surface-raised: #ffffff;
+      --white: #1d1d1f;
+      --body: #424245;
+      --gray: #6e6e73;
+      --gray-dark: #86868b;
+      --line: #d2d2d7;
+      --green: #16865c;
+      --purple: #5b39ff;
+      --max-width: 1120px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--black);
+    }
+
+    body {
+      margin: 0;
+      color: var(--white);
+      background: var(--black);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+        "SF Pro Text", "PingFang SC", "Microsoft YaHei", sans-serif;
+      letter-spacing: 0;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      height: 52px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      background: rgba(255, 255, 255, 0.84);
+      backdrop-filter: saturate(160%) blur(18px);
+    }
+
+    .nav-inner {
+      width: min(calc(100% - 40px), var(--max-width));
+      height: 100%;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 15px;
+      font-weight: 650;
+    }
+
+    .brand img {
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      color: var(--body);
+      font-size: 12px;
+    }
+
+    .nav-links a:hover {
+      color: var(--white);
+    }
+
+    .section {
+      width: 100%;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .inner {
+      width: min(calc(100% - 48px), var(--max-width));
+      margin: 0 auto;
+      padding: 112px 0;
+    }
+
+    .hero {
+      min-height: 760px;
+      display: grid;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero .inner {
+      padding-top: 96px;
+      padding-bottom: 150px;
+    }
+
+    .hero-icon {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 36px;
+      border-radius: 8px;
+      box-shadow: 0 28px 80px rgba(22, 134, 92, 0.14);
+    }
+
+    .eyebrow {
+      margin: 0 0 18px;
+      color: var(--green);
+      font-size: 18px;
+      font-weight: 650;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 28px;
+      font-size: 88px;
+      line-height: 0.98;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+
+    .hero-lead {
+      max-width: 820px;
+      margin: 0 auto;
+      color: #d2d2d7;
+      font-size: 32px;
+      line-height: 1.32;
+      font-weight: 560;
+    }
+
+    .hero-note {
+      max-width: 720px;
+      margin: 30px auto 0;
+      color: var(--gray);
+      font-size: 20px;
+      line-height: 1.6;
+    }
+
+    .hero-next {
+      position: absolute;
+      left: 50%;
+      bottom: 34px;
+      transform: translateX(-50%);
+      color: var(--gray-dark);
+      font-size: 12px;
+    }
+
+    .mobile-only {
+      display: none;
+    }
+
+    .section-label {
+      margin-bottom: 24px;
+      color: var(--green);
+      font-size: 17px;
+      font-weight: 650;
+    }
+
+    h2 {
+      max-width: 900px;
+      margin-bottom: 34px;
+      font-size: 56px;
+      line-height: 1.08;
+      font-weight: 680;
+      letter-spacing: 0;
+    }
+
+    .statement {
+      max-width: 940px;
+      color: var(--body);
+      font-size: 26px;
+      line-height: 1.55;
+      font-weight: 480;
+    }
+
+    .statement strong {
+      color: var(--white);
+      font-weight: 650;
+    }
+
+    .audiences {
+      display: block;
+      margin-top: 72px;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .audience {
+      max-width: 820px;
+      padding: 42px 0 46px;
+    }
+
+    .audience-index {
+      display: block;
+      margin-bottom: 24px;
+      color: var(--gray-dark);
+      font-size: 13px;
+    }
+
+    .audience h3 {
+      margin-bottom: 14px;
+      font-size: 27px;
+      font-weight: 650;
+    }
+
+    .audience p {
+      margin-bottom: 0;
+      color: var(--gray);
+      font-size: 17px;
+      line-height: 1.72;
+    }
+
+    .showcase {
+      background: var(--surface);
+    }
+
+    .showcase-copy {
+      display: block;
+      max-width: 900px;
+      margin-bottom: 54px;
+    }
+
+    .showcase-copy h2 {
+      margin-bottom: 0;
+    }
+
+    .showcase-copy p {
+      margin-bottom: 4px;
+      color: var(--gray);
+      font-size: 19px;
+      line-height: 1.65;
+    }
+
+    .product-image {
+      width: 100%;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+    }
+
+    .product-image img {
+      width: 100%;
+      height: auto;
+    }
+
+    .image-caption {
+      margin-top: 16px;
+      color: var(--gray-dark);
+      font-size: 12px;
+    }
+
+    .feature-list {
+      margin-top: 62px;
+      border-top: 1px solid var(--line);
+    }
+
+    .feature-row {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 64px;
+      padding: 34px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .feature-row h3 {
+      margin-bottom: 0;
+      font-size: 21px;
+      font-weight: 650;
+    }
+
+    .feature-row p {
+      margin-bottom: 0;
+      color: var(--gray);
+      font-size: 17px;
+      line-height: 1.7;
+    }
+
+    .accent {
+      color: var(--green);
+    }
+
+    .facts {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      margin-top: 76px;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .fact {
+      min-height: 170px;
+      padding: 32px 30px 32px 0;
+    }
+
+    .fact + .fact {
+      padding-left: 30px;
+      border-left: 1px solid var(--line);
+    }
+
+    .fact strong {
+      display: block;
+      margin-bottom: 12px;
+      font-size: 38px;
+      font-weight: 680;
+    }
+
+    .fact span {
+      color: var(--gray);
+      font-size: 15px;
+      line-height: 1.55;
+    }
+
+    .comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      margin-top: 62px;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .comparison-block {
+      padding: 42px 48px 46px 0;
+    }
+
+    .comparison-block + .comparison-block {
+      padding-left: 48px;
+      border-left: 1px solid var(--line);
+    }
+
+    .comparison-block span {
+      display: block;
+      margin-bottom: 18px;
+      color: var(--gray-dark);
+      font-size: 13px;
+    }
+
+    .comparison-block h3 {
+      margin-bottom: 12px;
+      font-size: 28px;
+      line-height: 1.25;
+    }
+
+    .comparison-block p {
+      margin-bottom: 0;
+      color: var(--gray);
+      font-size: 16px;
+      line-height: 1.65;
+    }
+
+    .closing {
+      min-height: 620px;
+      display: grid;
+      align-items: center;
+      text-align: center;
+    }
+
+    .closing h2 {
+      max-width: 900px;
+      margin-right: auto;
+      margin-left: auto;
+    }
+
+    .closing p {
+      max-width: 720px;
+      margin: 0 auto;
+      color: var(--gray);
+      font-size: 21px;
+      line-height: 1.65;
+    }
+
+    .closing-mark {
+      width: 64px;
+      height: 64px;
+      margin: 42px auto 0;
+      border-radius: 8px;
+    }
+
+    footer {
+      width: min(calc(100% - 48px), var(--max-width));
+      margin: 0 auto;
+      padding: 28px 0 36px;
+      display: flex;
+      justify-content: space-between;
+      color: var(--gray-dark);
+      font-size: 12px;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 700ms ease, transform 700ms ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      .reveal {
+        opacity: 1;
+        transform: none;
+        transition: none;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .nav-links {
+        display: none;
+      }
+
+      .inner {
+        width: min(calc(100% - 32px), var(--max-width));
+        padding: 80px 0;
+      }
+
+      .hero {
+        min-height: 720px;
+      }
+
+      .hero .inner {
+        padding-bottom: 120px;
+      }
+
+      .hero-icon {
+        width: 92px;
+        height: 92px;
+      }
+
+      h1 {
+        font-size: 56px;
+      }
+
+      .hero-lead {
+        max-width: 310px;
+        font-size: 23px;
+        overflow-wrap: anywhere;
+      }
+
+      .hero-note {
+        max-width: 310px;
+        margin-right: auto;
+        margin-left: auto;
+        font-size: 14px;
+        overflow-wrap: anywhere;
+      }
+
+      .mobile-only {
+        display: initial;
+      }
+
+      h2 {
+        font-size: 38px;
+      }
+
+      .statement {
+        font-size: 21px;
+      }
+
+      .audiences,
+      .showcase-copy,
+      .facts,
+      .comparison {
+        grid-template-columns: 1fr;
+      }
+
+      .audience,
+      .audience + .audience,
+      .comparison-block,
+      .comparison-block + .comparison-block {
+        padding: 32px 0;
+        border-left: 0;
+      }
+
+      .audience + .audience,
+      .comparison-block + .comparison-block {
+        border-top: 1px solid var(--line);
+      }
+
+      .showcase-copy {
+        gap: 18px;
+      }
+
+      .feature-row {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .fact,
+      .fact + .fact {
+        min-height: 0;
+        padding: 28px 0;
+        border-left: 0;
+      }
+
+      .fact + .fact {
+        border-top: 1px solid var(--line);
+      }
+
+      .closing {
+        min-height: 540px;
+      }
+    }
+
+    @media print {
+      .nav,
+      .hero-next {
+        display: none;
+      }
+
+      .reveal {
+        opacity: 1;
+        transform: none;
+      }
+
+      .section {
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="nav" aria-label="页面导航">
+    <div class="nav-inner">
+      <a class="brand" href="#top">
+        <img src="assets/bino-icon.png" alt="">
+        <span>BinoXR</span>
+      </a>
+      <nav class="nav-links">
+        <a href="#value">空间价值</a>
+        <a href="#experience">产品体验</a>
+        <a href="#features">核心能力</a>
+        <a href="#difference">为什么需要</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="section hero">
+      <div class="inner reveal">
+        <img class="hero-icon" src="assets/bino-icon.png" alt="BinoXR 应用图标">
+        <p class="eyebrow">PICO 空间图片工具</p>
+        <h1>BinoXR</h1>
+        <p class="hero-note">
+          面向 XR 产品经理与概念设计师<br>
+          浏览、转换、对比、沉浸评审，<span class="mobile-only"><br></span>一套完整工作流
+        </p>
+      </div>
+      <a class="hero-next" href="#value">向下了解空间预览价值</a>
+    </section>
+
+    <section class="section" id="value">
+      <div class="inner">
+        <div class="reveal">
+          <p class="section-label">空间预览价值</p>
+          <h2>同一张参考图或 AI 概念图，不同的人会形成不同的空间想象。</h2>
+          <p class="statement">
+            传统 2D 图片能够表达构图和风格，却难以真实呈现第一人称视角下的
+            <strong>空间氛围、景深层次、尺度关系与包围感</strong>。
+            产品经理和设计师即使看着同一张图，脑海中的 XR 体验也可能完全不同。
+          </p>
+        </div>
+
+        <div class="audiences reveal">
+          <article class="audience">
+            <span class="audience-index">XR 产品与概念设计</span>
+            <h3>更早发现体验问题</h3>
+            <p>
+              将普通 2D 概念图快速转换为 180° 双目 3D，在第一人称视角中验证空间层次、
+              主体位置、尺度关系与环境氛围。在进入完整开发之前，产品与设计就能更早发现
+              方向性问题，让设计判断更直观，也让沟通更具体。
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section showcase" id="experience">
+      <div class="inner">
+        <div class="showcase-copy reveal">
+          <h2>Waterfall 瀑布流与 Files 文件夹管理，让图片选择保持简单。</h2>
+        </div>
+
+        <figure class="reveal">
+          <div class="product-image">
+            <img src="assets/bino-interface.png" alt="BinoXR 在 PICO Emulator 中的真实 Waterfall 界面">
+          </div>
+          <figcaption class="image-caption">
+            PICO Emulator 真实运行界面，不是设计效果图
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section" id="features">
+      <div class="inner">
+        <div class="reveal">
+          <p class="section-label">核心能力</p>
+          <h2>一套为 XR 图片而设计的完整链路。</h2>
+        </div>
+
+        <div class="feature-list reveal">
+          <article class="feature-row">
+            <h3>智能识别</h3>
+            <p>
+              自动识别 2D、180° 3D、360° 和 360° 3D，
+              并匹配平面、半球、球面及左右/上下双目投影。
+            </p>
+          </article>
+          <article class="feature-row">
+            <h3>沉浸观看</h3>
+            <p>
+              Shared Space 预览、Full Space 观看、Dock 缩略图切换、手柄摇杆翻图，
+              同时支持 <span class="accent">L/R</span> 眼序交换和 2D 的 360° 投影。
+            </p>
+          </article>
+          <article class="feature-row">
+            <h3>AI 立体转换</h3>
+            <p>
+              当前图片一键生成 180° 双目 3D，也可按文件夹批量处理；
+              默认输出单眼 2K、双目 4K，并在完成后自动显示新图。
+            </p>
+          </article>
+          <article class="feature-row">
+            <h3>完整任务反馈</h3>
+            <p>
+              实时进度、阶段提示、取消、失败重试和重复结果跳过。
+              原始 2D 图与生成 3D 图相邻排列，便于即时对比。
+            </p>
+          </article>
+          <article class="feature-row">
+            <h3>头显本地处理</h3>
+            <p>
+              不依赖电脑或云端。超采样、遮挡补洞、边缘镜像、羽化和渐进模糊，
+              让转换结果更适合 XR 大视野观看。
+            </p>
+          </article>
+        </div>
+
+        <div class="facts reveal" aria-label="关键规格">
+          <div class="fact">
+            <strong>4K</strong>
+            <span>180° 双目输出<br>单眼 2K</span>
+          </div>
+          <div class="fact">
+            <strong>4 类</strong>
+            <span>2D / 180° 3D<br>360° / 360° 3D</span>
+          </div>
+          <div class="fact">
+            <strong>本地</strong>
+            <span>浏览、推理与转换<br>全部在头显完成</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="difference">
+      <div class="inner">
+        <div class="reveal">
+          <p class="section-label">为什么需要 BinoXR</p>
+          <h2>系统通用查看器与快速 XR 设计预览，是两种不同的需求。</h2>
+          <p class="statement">
+            系统查看器更适合日常 2D 图片的快速浏览。BinoXR 则把双目图片的浏览与生成、
+            格式识别、原图对比和沉浸查看整合在同一条操作路径中，交互逻辑更贴近设计师
+            和产品经理进行<strong>快速 VR 预览、快速判断与及时沟通</strong>的工作方式。
+          </p>
+        </div>
+
+        <div class="comparison reveal">
+          <article class="comparison-block">
+            <span>系统图片查看器</span>
+            <h3>适合日常通用浏览</h3>
+            <p>快速打开和查看图片，满足大多数常规使用场景。</p>
+          </article>
+          <article class="comparison-block">
+            <span>BinoXR</span>
+            <h3>更贴近 XR 设计评审</h3>
+            <p>补充格式识别、立体转换、原图对比和沉浸预览，让产品与设计更快围绕同一个头显画面沟通。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section closing">
+      <div class="inner reveal">
+        <p class="section-label">推荐体验</p>
+        <h2>少一点各自想象。<br>早一点进入真实空间。</h2>
+        <p>
+          如果工作涉及 XR 产品定义、概念设计、空间视觉评审或沉浸内容展示，
+          BinoXR 值得成为日常工作流的一部分。
+        </p>
+        <img class="closing-mark" src="assets/bino-icon.png" alt="">
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>BinoXR</span>
+    <span>Designed for spatial review on PICO</span>
+  </footer>
+
+  <script>
+    const items = document.querySelectorAll(".reveal");
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.14 }
+    );
+
+    items.forEach((item) => observer.observe(item));
+  </script>
+</body>
+</html>

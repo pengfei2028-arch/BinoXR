@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">BinoXR</string>
+    <string name="homepage_title">BinoXR</string>
+    <string name="homepage_body_definition">Milestone 0 validates the official Shared Space and Full Space lifecycle.</string>
+    <string name="enter_full_space">Enter Full Space</string>
+    <string name="full_space_title">FULL SPACE ACTIVE</string>
+    <string name="full_space_body">This view is running in a PICO Spatial SDK Stage.</string>
+    <string name="return_to_shared_space">Return to Shared Space</string>
+</resources>

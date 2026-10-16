@@ -1,0 +1,45 @@
+*.iml
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# Local IDE state and generated build output (all modules)
+.idea/
+.kotlin/
+**/build/
+*.apk
+*.aab
+*.log
+*.blend1
+.chrome-*/
+
+# Local credentials and signing material
+.env
+.env.*
+*.jks
+*.keystore
+*.pem
+key.properties
+
+# Distribution archives and duplicate handoff copies
+/*.zip
+/BinoXR-AI-handoff-lite-*/
+/BinoXR-product-visual-kit-*/
+/BinoXR-web-redesign-handoff/
+
+# Extracted dependency metadata, not application sources
+/META-INF/
+/AndroidManifest.xml
+/R.txt
+/proguard.txt
