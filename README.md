@@ -2,6 +2,12 @@
 
 PICO 头显本地空间图片浏览与 AI 立体转换应用。当前工程为 Kotlin / Jetpack Compose + PICO Spatial SDK 的 Android Gradle 工程。
 
+## PICO Creator Center 申报说明
+
+- 平台技术栈分类：Android Spatial；实际开发技术为 Kotlin、Jetpack Compose 和 PICO Spatial SDK。
+- 交互能力：手势追踪（捏合唤回 Dock）、手柄交互（摇杆左右切图）。
+- 本次 V1.0.1 为申报资料修订，补充技术栈和交互说明，应用功能、APK 版本号保持不变。
+
 ## 当前功能
 
 - Waterfall 瀑布流与 Files 文件夹浏览。
@@ -13,7 +19,7 @@ PICO 头显本地空间图片浏览与 AI 立体转换应用。当前工程为 K
 
 ## 在另一台电脑上拉取
 
-先安装 Git、Git LFS、Android Studio，并获得本私有仓库的访问权限。
+先安装 Git、Git LFS 和 Android Studio。本仓库已公开，可直接克隆。
 
 ```sh
 git lfs install
