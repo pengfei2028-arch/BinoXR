@@ -29,7 +29,7 @@ git lfs pull
 git lfs fsck
 ```
 
-模型、PNG/JPG 图片、Blender 文件和 USDZ 使用 Git LFS。请使用 Git clone 获取工程，避免只下载 ZIP 后缺失真实的大文件。
+应用构建和运行所需的图标、ONNX 模型及图片直接存储在 Git 中，普通克隆即可获取完整内容。宣传资料、历史设计图、Blender 文件和 USDZ 仍使用 Git LFS；上述 LFS 命令用于获取这些非当前应用构建必需的资料。
 
 ## 构建
 
@@ -47,13 +47,15 @@ macOS/Linux 使用 `./gradlew`。APK 输出位置为 `app/build/outputs/apk/debu
 
 ### PICO Lab / CI Release 构建
 
-配置 JDK 和 Android SDK（API 35），并执行 `git lfs pull` 后运行：
+配置 JDK 和 Android SDK（API 35）后运行（当前 APK 构建不依赖 Git LFS 下载）：
 
 ```sh
 ./gradlew --no-daemon --console=plain assembleRelease --stacktrace
 ```
 
 Release 输出位于 `app/build/outputs/apk/release/`。仓库不包含发布签名配置，签名由发布平台或发布者提供。
+
+部分云端构建器只检出 Git 文件，不会下载 Git LFS 对象。若将 Android 图标交给 LFS，检出的 `.png` 可能是文本指针，导致 `mergeReleaseResources` / AAPT 编译失败；模型指针还可能被原样打入 APK，导致运行时推理失败。因此 `.gitattributes` 将 `app/src/main/` 下的 PNG、JPG 和 ONNX 排除出 LFS，确保应用资源随源码完整交付。新增大型运行资源时，应检查 Git 平台的单文件大小限制。
 
 早期 `editor-asset` 模块使用 Spatial Tools 插件 6.1.0，即使没有执行场景打包任务，也会在 Gradle 配置阶段要求安装 Spatial Editor。当前 `FullSpacePage` 使用 `app/src/main/assets/stereo/` 中的 OBJ 网格，并通过代码创建实体，不再加载该模块的 `MyScene` 或 `editor-asset.bundle`。因此该历史模块保留源码，但已从当前构建依赖中移除；PICO Spatial SDK 6.1.9 的运行时依赖保持不变。
 

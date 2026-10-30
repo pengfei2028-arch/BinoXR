@@ -6,3 +6,8 @@ gradlew text eol=lf
 *.jpg filter=lfs diff=lfs merge=lfs -text
 *.blend filter=lfs diff=lfs merge=lfs -text
 *.usdz filter=lfs diff=lfs merge=lfs -text
+# APK inputs must work on builders that do not download Git LFS objects.
+# Keep these binaries directly in Git; non-runtime design assets still use LFS.
+app/src/main/**/*.png -filter -diff -merge -text
+app/src/main/**/*.jpg -filter -diff -merge -text
+app/src/main/**/*.onnx -filter -diff -merge -text
