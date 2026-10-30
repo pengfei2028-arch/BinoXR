@@ -59,7 +59,6 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation("androidx.exifinterface:exifinterface:1.3.7")
     implementation("com.microsoft.onnxruntime:onnxruntime-android:1.20.0")
-    implementation(project(":editor-asset"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -36,7 +36,7 @@ git lfs fsck
 1. 用 Android Studio 打开仓库根目录。
 2. 安装 Android SDK Platform 35，配置能运行 AGP 8.13.2 / Gradle Wrapper 的 JDK（推荐 Android Studio 内置 JBR）。
 3. 通过 Android Studio 配置 SDK 路径；`local.properties` 仅保留在各电脑本地，不提交。
-4. Gradle 同步需要访问 Google、Maven Central 和 `settings.gradle.kts` 指定的 PICO/Volcengine 制品源。场景模块使用 PICO Spatial Tools 6.1.0。
+4. Gradle 同步需要访问 Google、Maven Central 和 `settings.gradle.kts` 指定的 PICO/Volcengine 制品源。当前应用构建不需要安装 Spatial Editor，也不需要配置 `spatial.tools.dir` 或 `PICO_HOME`。
 5. 在项目根目录执行：
 
 ```powershell
@@ -45,6 +45,18 @@ git lfs fsck
 
 macOS/Linux 使用 `./gradlew`。APK 输出位置为 `app/build/outputs/apk/debug/app-debug.apk`。
 
+### PICO Lab / CI Release 构建
+
+配置 JDK 和 Android SDK（API 35），并执行 `git lfs pull` 后运行：
+
+```sh
+./gradlew --no-daemon --console=plain assembleRelease --stacktrace
+```
+
+Release 输出位于 `app/build/outputs/apk/release/`。仓库不包含发布签名配置，签名由发布平台或发布者提供。
+
+早期 `editor-asset` 模块使用 Spatial Tools 插件 6.1.0，即使没有执行场景打包任务，也会在 Gradle 配置阶段要求安装 Spatial Editor。当前 `FullSpacePage` 使用 `app/src/main/assets/stereo/` 中的 OBJ 网格，并通过代码创建实体，不再加载该模块的 `MyScene` 或 `editor-asset.bundle`。因此该历史模块保留源码，但已从当前构建依赖中移除；PICO Spatial SDK 6.1.9 的运行时依赖保持不变。
+
 应用当前只配置 `arm64-v8a`，最低 Android API 35。XR 交互、双目效果和流畅性应在支持的 PICO Swan 真机验证，桌面构建通过不代表已完成真机验收。
 
 ## 目录
@@ -52,7 +64,7 @@ macOS/Linux 使用 `./gradlew`。APK 输出位置为 `app/build/outputs/apk/debu
 | 路径 | 内容 |
 | --- | --- |
 | `app/` | 应用源码、测试、图片、模型和观看网格 |
-| `editor-asset/` | PICO Spatial 场景工程及构建配置 |
+| `editor-asset/` | 历史 PICO Spatial 示例场景，保留源码，不参与当前应用构建 |
 | `tools/` | 网格生成脚本、Blender 源文件 |
 | `design/` | 历史 Logo 概念资料 |
 | `screenshots/` | 已有截图 |

@@ -29,4 +29,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "PicoStereoViewer"
 include(":app")
-include(":editor-asset")
+// FullSpacePage creates entities from app/assets/stereo meshes at runtime.
+// editor-asset is a historical sample, not an application build dependency.
